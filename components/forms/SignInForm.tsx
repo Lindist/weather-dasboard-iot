@@ -97,7 +97,7 @@ export default function SignInForm() {
 
       <Button
         type="submit"
-        className="flex h-10 w-full gap-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500"
+        className="flex h-10 w-full gap-2 rounded-lg bg-slate-200 font-medium text-slate-900 hover:bg-white"
         disabled={form.formState.isSubmitting}
       >
         Sign In

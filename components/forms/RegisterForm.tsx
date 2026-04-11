@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-// import { toast } from "sonner";
-// import { signUpWithEmailAndPassword } from "@/actions";
+import { toast } from "sonner";
+import { signUpWithEmailAndPassword } from "@/app/actions";
 
 const FormSchema = z
   .object({
@@ -36,35 +36,30 @@ export default function RegisterForm() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("data", data);
-    // startTransition(async () => {
-    //   const result = await signUpWithEmailAndPassword(data);
-    //   const { error } = result;
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    const result = await signUpWithEmailAndPassword({
+      email: data.email,
+      password: data.password,
+    });
 
-    //   if (error?.message) {
-    //     console.log(error.message);
-    //     toast({
-    //       variant: "destructive",
-    //       title: "You submitted the following values:",
-    //       description: (
-    //         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //           <code className="text-white">{error.message}</code>
-    //         </pre>
-    //       ),
-    //     });
-    //   } else {
-    //     console.log("succes");
-    //     toast({
-    //       title: "You submitted the following values:",
-    //       description: (
-    //         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //           <code className="text-white">Successfully register</code>
-    //         </pre>
-    //       ),
-    //     });
-    //   }
-    // });
+    if (!result.success) {
+      toast.error("Registration failed", {
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">{result.error}</code>
+          </pre>
+        ),
+      });
+      return;
+    }
+
+    toast.success("Successfully registered", {
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">Successfully register</code>
+        </pre>
+      ),
+    });
   }
 
   return (
@@ -122,7 +117,7 @@ export default function RegisterForm() {
 
       <Button
         type="submit"
-        className="flex h-10 w-full gap-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500"
+        className="flex h-10 w-full gap-2 rounded-lg bg-slate-200 font-medium text-slate-900 hover:bg-white"
         disabled={form.formState.isSubmitting}
       >
         Register

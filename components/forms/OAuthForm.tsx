@@ -49,7 +49,7 @@ export default function OAuthForm() {
   return (
     <Button
       variant="outline"
-      className="h-10 w-full rounded-xl border-slate-600 bg-slate-800/80 text-slate-100 transition-colors hover:bg-slate-700"
+      className="h-10 w-full rounded-lg border-slate-600 bg-transparent text-slate-100! transition-colors hover:border-slate-500 hover:bg-slate-800/60"
       onClick={loginWithGithub}
     >
       Continue with GitHub
