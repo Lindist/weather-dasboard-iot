@@ -1,33 +1,25 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+// import { toast } from "sonner";
 // import { signUpWithEmailAndPassword } from "@/actions";
-import { useTransition } from "react";
 
 const FormSchema = z
   .object({
     email: z.string().email(),
-    password: z.string().min(6, {
-      message: "Password is required.",
+    password: z.string().min(8, {
+      message: "Password is required and Must filled out equalmore 8 length.",
     }),
-    confirm: z.string().min(6, {
-      message: "Password is required.",
+    confirm: z.string().min(8, {
+      message: "Password is required and Must filled out equalmore 8 length.",
     }),
   })
   .refine((data) => data.confirm === data.password, {
@@ -35,7 +27,6 @@ const FormSchema = z
     path: ["confirm"],
   });
 export default function RegisterForm() {
-  const [isPending, startTransition] = useTransition();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -46,7 +37,7 @@ export default function RegisterForm() {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log('data',data)
+    console.log("data", data);
     // startTransition(async () => {
     //   const result = await signUpWithEmailAndPassword(data);
     //   const { error } = result;
@@ -77,71 +68,68 @@ export default function RegisterForm() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex justify-start">Email</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="example@gmail.com"
-                  {...field}
-                  type="email"
-                  onChange={field.onChange}
-                />
-              </FormControl>
-              <FormMessage className="flex justify-start" />
-            </FormItem>
-          )}
+    <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-5">
+      <Field className="flex-col gap-2">
+        <FieldLabel htmlFor="register-email" className="flex justify-start">
+          Email
+        </FieldLabel>
+        <Input
+          id="register-email"
+          placeholder="example@gmail.com"
+          type="email"
+          {...form.register("email")}
+          aria-invalid={!!form.formState.errors.email}
         />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex justify-start">Password</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="password"
-                  {...field}
-                  type="password"
-                  onChange={field.onChange}
-                />
-              </FormControl>
+        <FieldError
+          className="flex justify-start text-red-500"
+          errors={[form.formState.errors.email]}
+        />
+      </Field>
 
-              <FormMessage className="flex justify-start" />
-            </FormItem>
-          )}
+      <Field className="flex-col gap-2">
+        <FieldLabel htmlFor="register-password" className="flex justify-start">
+          Password
+        </FieldLabel>
+        <Input
+          id="register-password"
+          placeholder="password"
+          type="password"
+          {...form.register("password")}
+          aria-invalid={!!form.formState.errors.password}
         />
-        <FormField
-          control={form.control}
-          name="confirm"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex justify-start">
-                Confirm Password
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Confirm Password"
-                  {...field}
-                  type="password"
-                  onChange={field.onChange}
-                />
-              </FormControl>
+        <FieldError
+          className="flex justify-start text-red-500"
+          errors={[form.formState.errors.password]}
+        />
+      </Field>
 
-              <FormMessage className="flex justify-start" />
-            </FormItem>
-          )}
+      <Field className="flex-col gap-2">
+        <FieldLabel htmlFor="register-confirm" className="flex justify-start">
+          Confirm Password
+        </FieldLabel>
+        <Input
+          id="register-confirm"
+          placeholder="Confirm Password"
+          type="password"
+          {...form.register("confirm")}
+          aria-invalid={!!form.formState.errors.confirm}
         />
-        <Button type="submit" className="w-full flex gap-2">
-          Register
-          <Icons.spinner className={cn("animate-spin", { hidden: !isPending })} />
-        </Button>
-      </form>
-    </Form>
+        <FieldError
+          className="flex justify-start text-red-500"
+          errors={[form.formState.errors.confirm]}
+        />
+      </Field>
+
+      <Button
+        type="submit"
+        className="flex h-10 w-full gap-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500"
+        disabled={form.formState.isSubmitting}
+      >
+        Register
+        <Icons.spinner
+          className={cn("animate-spin", { hidden: !form.formState.isSubmitting })}
+        />
+      </Button>
+    </form>
   );
 }

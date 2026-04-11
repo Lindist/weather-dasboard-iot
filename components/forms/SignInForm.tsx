@@ -1,33 +1,25 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+// import { toast } from "@/components/ui/use-toast";
 // import { signInWithEmailAndPassword } from "@/actions";
-import { useTransition } from "react";
 
 const FormSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(1, {
-    message: "Password is required.",
+  password: z.string().min(8, {
+    message: "Password is required and Must filled out equalmore 8 length.",
   }),
 });
 
 export default function SignInForm() {
-  const [isPending, startTransition] = useTransition();
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -37,7 +29,7 @@ export default function SignInForm() {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log('data',data)
+    console.log("data", data);
     // startTransition(async () => {
     //   const result = await signInWithEmailAndPassword(data);
     //   const { error } = result;
@@ -68,52 +60,51 @@ export default function SignInForm() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex justify-start">Email</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="example@gmail.com"
-                  {...field}
-                  type="email"
-                  onChange={field.onChange}
-                />
-              </FormControl>
-              <FormMessage className="flex justify-start"/>
-            </FormItem>
-          )}
+    <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-5">
+      <Field className="flex-col gap-2">
+        <FieldLabel htmlFor="signin-email" className="flex justify-start">
+          Email
+        </FieldLabel>
+        <Input
+          id="signin-email"
+          placeholder="example@gmail.com"
+          type="email"
+          {...form.register("email")}
+          aria-invalid={!!form.formState.errors.email}
         />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex justify-start">Password</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="password"
-                  {...field}
-                  type="password"
-                  onChange={field.onChange}
-                />
-              </FormControl>
+        <FieldError
+          className="flex justify-start text-red-500"
+          errors={[form.formState.errors.email]}
+        />
+      </Field>
 
-              <FormMessage className="flex justify-start"/>
-            </FormItem>
-          )}
+      <Field className="flex-col gap-2">
+        <FieldLabel htmlFor="signin-password" className="flex justify-start">
+          Password
+        </FieldLabel>
+        <Input
+          id="signin-password"
+          placeholder="password"
+          type="password"
+          {...form.register("password")}
+          aria-invalid={!!form.formState.errors.password}
         />
-        <Button type="submit" className="w-full flex gap-2">
-          SignIn
-          <Icons.spinner
-            className={cn("animate-spin", { hidden: !isPending })}
-          />
-        </Button>
-      </form>
-    </Form>
+        <FieldError
+          className="flex justify-start text-red-500"
+          errors={[form.formState.errors.password]}
+        />
+      </Field>
+
+      <Button
+        type="submit"
+        className="flex h-10 w-full gap-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500"
+        disabled={form.formState.isSubmitting}
+      >
+        Sign In
+        <Icons.spinner
+          className={cn("animate-spin", { hidden: !form.formState.isSubmitting })}
+        />
+      </Button>
+    </form>
   );
 }
