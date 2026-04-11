@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-// import { toast } from "@/components/ui/use-toast";
-// import { signInWithEmailAndPassword } from "@/actions";
+import { toast } from "sonner";
+import { signInWithEmailAndPassword } from "@/app/actions";
 
 const FormSchema = z.object({
   email: z.string().email(),
@@ -28,35 +28,31 @@ export default function SignInForm() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("data", data);
-    // startTransition(async () => {
-    //   const result = await signInWithEmailAndPassword(data);
-    //   const { error } = result;
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    const result = await signInWithEmailAndPassword({
+      email: data.email,
+      password: data.password,
+    });
 
-    //   if (error?.message) {
-    //     console.log(error.message);
-    //     toast({
-    //       variant: "destructive",
-    //       title: "You submitted the following values:",
-    //       description: (
-    //         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //           <code className="text-white">{error.message}</code>
-    //         </pre>
-    //       ),
-    //     });
-    //   } else {
-    //     console.log("succes");
-    //     toast({
-    //       title: "You submitted the following values:",
-    //       description: (
-    //         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //           <code className="text-white">Successfully Login</code>
-    //         </pre>
-    //       ),
-    //     });
-    //   }
-    // });
+    if (!result.success) {
+      const msg = result.error.toLowerCase();
+      const description =
+        msg.includes("rate limit") || msg.includes("email rate limit")
+          ? "Too many emails sent. Wait a while or raise the limit under Authentication → Email in Supabase."
+          : result.error;
+
+      toast.error("Sign in failed", {
+        description,
+        duration: 6500,
+      });
+      return;
+    }
+
+    toast.success("Sign in successful", {
+      description:
+        "Redirecting to home page...",
+      duration: 5000,
+    });
   }
 
   return (

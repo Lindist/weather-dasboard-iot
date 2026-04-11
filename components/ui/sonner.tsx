@@ -12,6 +12,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
+      position="top-right"
+      closeButton
       icons={{
         success: (
           <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={2} className="size-4" />
@@ -39,7 +41,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }
       toastOptions={{
         classNames: {
-          toast: "cn-toast",
+          toast:
+            "cn-toast !w-[min(calc(100vw-1.5rem),22rem)] !max-w-[min(calc(100vw-1.5rem),22rem)]",
+          title: "text-[0.9375rem] font-semibold leading-snug",
+          description: "text-sm leading-snug opacity-90 break-words [word-break:break-word]",
         },
       }}
       {...props}

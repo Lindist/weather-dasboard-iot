@@ -85,20 +85,15 @@ export const signInWithEmailAndPassword = async (
   }
 };
 
-export const signOut = async (): Promise<AuthActionFailure | AuthActionSuccess<null>> => {
-  try {
-    const supabase = await createSupabaseServerClient();
-    const { error } = await supabase.auth.signOut();
+export const signOut = async (): Promise<void> => {
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.signOut();
 
-    if (error) {
-      return { success: false, error: error.message };
-    }
-
-    redirect("/auth");
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Sign out failed.";
-    return { success: false, error: message };
+  if (error) {
+    throw new Error(error.message);
   }
+
+  redirect("/auth");
 };
 
 export const readUserSession = async (): Promise<

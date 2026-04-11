@@ -1,13 +1,14 @@
 import React from "react";
 import { AuthForm } from "../../components/forms/AuthForm";
-// import readUserSession from "@/actions";
+import { readUserSession } from "@/app/actions";
 import { Icons } from "@/components/icons";
+import { redirect } from "next/navigation";
 
 export default async function page() {
-  // const { data } = await readUserSession();
-  // if (data.session) {
-  //   return redirect("/");
-  // }
+  const result = await readUserSession();
+  if (result.success) {
+    return redirect("/");
+  }
   return (
     <div className="container relative grid min-h-screen flex-col items-center justify-center lg:max-w-none lg:grid-cols-2 lg:px-0">
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">

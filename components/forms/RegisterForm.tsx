@@ -43,22 +43,23 @@ export default function RegisterForm() {
     });
 
     if (!result.success) {
+      const msg = result.error.toLowerCase();
+      const description =
+        msg.includes("rate limit") || msg.includes("email rate limit")
+          ? "Too many emails sent. Wait a while or raise the limit under Authentication → Email in Supabase."
+          : result.error;
+
       toast.error("Registration failed", {
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{result.error}</code>
-          </pre>
-        ),
+        description,
+        duration: 6500,
       });
       return;
     }
 
-    toast.success("Successfully registered", {
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">Successfully register</code>
-        </pre>
-      ),
+    toast.success("Account created", {
+      description:
+        "If email confirmation is on, check your inbox for the link before signing in.",
+      duration: 5000,
     });
   }
 
