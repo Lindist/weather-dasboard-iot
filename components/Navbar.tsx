@@ -34,7 +34,7 @@ export function Navbar() {
               <Link href={"https://github.com/rch-goldsnaker/weather-station"} target="_blank">
                 <Button variant={"ghost"} className="gap-1">
                   <Icons.gitHub className="h-5 w-5" />
-                  <p className="hidden md:block">Github</p>
+                  <span className="hidden md:block">Github</span>
                 </Button>
               </Link>
             </li>
@@ -42,7 +42,7 @@ export function Navbar() {
               <form action={signOut}>
                 <Button className="gap-1">
                   <Icons.logout className="h-5 w-5" />
-                  <p className="hidden md:block">Sign Out</p>
+                  <span className="hidden md:block">Sign Out</span>
                 </Button>
               </form>
             </li>

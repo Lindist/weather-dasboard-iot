@@ -18,7 +18,7 @@ export function ProfileModal() {
       <DialogTrigger asChild>
         <Button variant="ghost" className="gap-1">
           <User className="h-4 w-4" />
-          <p>Profile</p>
+          <span>Profile</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
