@@ -10,7 +10,7 @@ import {
 } from "../ui/drawer";
 import { Button } from "../ui/button";
 import { Settings, User } from "lucide-react";
-import { SettingForm } from "../forms/SettingForm";
+import { SettingForm } from "@/components/forms/SettingForm";
 
 export function SettingDrawer() {
   return (

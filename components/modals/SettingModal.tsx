@@ -10,21 +10,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { SettingForm } from "../forms/SettingForm";
+import { SettingForm } from "@/components/forms/SettingForm";
 import { readSetting } from "@/app/actions";
 import { Badge } from "../ui/badge";
 
 export async function SettingModal() {
   const result = await readSetting();
-  let entityType: string = "";
-  let entityId: string = "";
-  let keys: string = "";
-  let useStrictDataTypes: string = "";
-  if (result.data && result.data.length > 0) {
-    entityType = result.data[0].entityType;
-    entityId = result.data[0].entityId;
-    keys = result.data[0].keys;
-    useStrictDataTypes = result.data[0].useStrictDataTypes;
+  let entityType = "";
+  let entityId = "";
+  let keys = "";
+  let useStrictDataTypes = "";
+  if (result.success && result.data.setting) {
+    const s = result.data.setting;
+    entityType = s.entityType;
+    entityId = s.entityId;
+    keys = s.keys;
+    useStrictDataTypes = s.useStrictDataTypes;
   }
   return (
     <Dialog>

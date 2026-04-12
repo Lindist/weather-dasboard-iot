@@ -4,7 +4,9 @@ import type { Session, User } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import type { SettingRow } from "@/types/settings";
 import { redirect } from "next/navigation";
+import { revalidatePath,unstable_noStore as noStore } from "next/cache";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -117,19 +119,39 @@ export const readUserSession = async (): Promise<
   }
 };
 
+export async function createSetting(data: {
+  entityType: string;
+  entityId: string;
+}) {
+  const supabase = await createSupabaseServerClient();
+
+  const result = await supabase
+    .from("settings")
+    .insert({
+      entityType: data.entityType,
+      entityId: data.entityId
+    })
+    .single();
+  
+    revalidatePath("/")
+  return result;
+}
+
 export const readSetting = async (): Promise<
-  AuthActionFailure | AuthActionSuccess<{ setting: any | null }>
+  AuthActionFailure | AuthActionSuccess<{ setting: SettingRow | null }>
 > => {
   try {
+    noStore();
     const supabase = await createSupabaseServerClient();
-    const { data, error } = await supabase.from("settings").select("*");
+    const { data, error } = await supabase.from("settings").select("*").order("created_at", { ascending: false }).limit(1);
     if (error) {
       return { success: false, error: error.message };
     }
-    if (!data) {
+    const rows = data as SettingRow[] | null;
+    if (!rows?.length) {
       return { success: false, error: "No setting found." };
     }
-    return { success: true, data: { setting: data[0] } };
+    return { success: true, data: { setting: rows[0] } };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Could not read setting.";
     return { success: false, error: message };
