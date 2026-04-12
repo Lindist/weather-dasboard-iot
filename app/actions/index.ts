@@ -116,3 +116,22 @@ export const readUserSession = async (): Promise<
     return { success: false, error: message };
   }
 };
+
+export const readSetting = async (): Promise<
+  AuthActionFailure | AuthActionSuccess<{ setting: any | null }>
+> => {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.from("settings").select("*");
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    if (!data) {
+      return { success: false, error: "No setting found." };
+    }
+    return { success: true, data: { setting: data[0] } };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Could not read setting.";
+    return { success: false, error: message };
+  }
+};
