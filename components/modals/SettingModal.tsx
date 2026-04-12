@@ -39,10 +39,10 @@ export async function SettingModal() {
         <DialogHeader>
           <DialogTitle>Setting</DialogTitle>
           <DialogDescription>
-            <p>
+            <span>
               Here you can adjust your telemetry settings to connect to
               ThingsBoard:
-            </p>
+            </span>
             <div className="flex flex-col gap-3 mt-1">
               <div className="flex gap-1">
                 <h1>EntityType:</h1>
