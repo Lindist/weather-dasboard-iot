@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
-// import SplineComponent from "../components/SplineComponent";
+import SplineComponent from "@/components/SplineComponent";
 import { readUserSession } from "@/app/actions";
 
 export default async function Home() {
@@ -17,7 +17,7 @@ export default async function Home() {
         </div>
         {/* <Footer /> */}
       </div>
-      {/* <SplineComponent/> */}
+      <SplineComponent/>
     </div>
   );
 }
