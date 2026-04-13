@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Drawer,
   DrawerClose,
@@ -9,7 +11,7 @@ import {
   DrawerTrigger,
 } from "../ui/drawer";
 import { Button } from "../ui/button";
-import { Settings, User } from "lucide-react";
+import { Settings } from "lucide-react";
 import { SettingForm } from "@/components/forms/SettingForm";
 
 export function SettingDrawer() {
