@@ -2,6 +2,8 @@
 
 import type { Session, User } from "@supabase/supabase-js";
 import { z } from "zod";
+import axios from "@/config/axiosTb";
+import { AxiosResponse } from "axios";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { SettingRow } from "@/types/settings";
@@ -21,6 +23,46 @@ export type AuthActionSuccess<T> = { success: true; data: T };
 const formatZodError = (error: z.ZodError): string =>
   error.issues.map((issue) => issue.message).join(", ");
 
+type LoginResult = {
+  token?: string;
+  refreshToken?: string;
+  error?: Error;
+};
+
+type ResponseData = {
+  token: string;
+  refreshToken: string;
+};
+
+
+//THINGSBOARD
+export async function loginTb(): Promise<LoginResult> {
+  try {
+    const username = process.env.TB_USERNAME;
+    const password = process.env.TB_PASSWORD;
+
+    if (!username || !password) {
+      throw new Error(
+        "The environment variables for the username and password are not defined."
+      );
+    }
+
+    const responseLogin: AxiosResponse<ResponseData> = await axios.post(
+      `/api/auth/login`,
+      {
+        username,
+        password,
+      }
+    );
+
+    const { token, refreshToken } = responseLogin.data;
+    return { token, refreshToken };
+  } catch (error) {
+    return { error: error as Error };
+  }
+}
+
+//SUPABASE
 export const signUpWithEmailAndPassword = async (
   rawInput: unknown
 ): Promise<
@@ -98,6 +140,7 @@ export const signOut = async (): Promise<void> => {
   redirect("/auth");
 };
 
+//SETTINGS
 export const readUserSession = async (): Promise<
   AuthActionFailure | AuthActionSuccess<{ user: User | null }>
 > => {
@@ -151,7 +194,7 @@ export const readSetting = async (): Promise<
     if (!rows?.length) {
       return { success: false, error: "No setting found." };
     }
-    return { success: true, data: { setting: rows[0] } };
+    return { success: true, data: { setting: rows[0] as SettingRow } };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Could not read setting.";
     return { success: false, error: message };

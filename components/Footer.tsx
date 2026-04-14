@@ -16,8 +16,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { loginTb } from "@/actions";
-import { readSetting } from "@/actions";
+import { loginTb,readSetting } from "@/app/actions";
 
 export function Footer() {
   const [tempIn, setTempIn] = useState(0);
@@ -36,9 +35,9 @@ export function Footer() {
         const login = await loginTb();
         const setting = await readSetting();
 
-        if (setting && setting.data && setting.data.length > 0) {
+        if (setting.success && setting.data && setting.data.setting && setting.data.setting.entityType && setting.data.setting.entityId) {
           const token = login.token;
-          let { entityType, entityId } = setting.data[0];
+          const { entityType, entityId } = setting.data.setting;
           const webSocket = new WebSocket(
             process.env.NEXT_PUBLIC_TB_WS_URL || ""
           );

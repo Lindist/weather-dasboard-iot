@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
-import SplineComponent from "@/components/SplineComponent";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 import { readUserSession } from "@/app/actions";
+import { SplineClientOnly } from "@/components/SplineClientOnly";
 
 export default async function Home() {
   const result = await readUserSession();
@@ -13,11 +15,11 @@ export default async function Home() {
       <div className="absolute w-full h-full text-white flex flex-col justify-between">
         <div className="flex flex-col">
           <Navbar />
-          {/* <Header /> */}
+          <Header />
         </div>
-        {/* <Footer /> */}
+        <Footer />
       </div>
-      <SplineComponent/>
+      <SplineClientOnly />
     </div>
   );
 }

@@ -15,7 +15,6 @@ import { ProfileForm } from "@/components/forms/ProfileForm";
 import { User } from "lucide-react";
 
 export function ProfileDrawer() {
-
   return (
     <Drawer>
       <DrawerTrigger asChild>

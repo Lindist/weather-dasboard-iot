@@ -2,10 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/app/actions";
 import { Icons } from "./icons";
-import { ProfileModal } from "./modals/ProfileModal";
-import { SettingModal } from "./modals/SettingModal";
-import { ProfileDrawer } from "./drawers/ProfileDrawer";
-import { SettingDrawer } from "./drawers/SettingDrawer";
+import { NavbarClientActions } from "./NavbarClientActions";
 
 export function Navbar() {
   return (
@@ -18,18 +15,7 @@ export function Navbar() {
         </div>
         <div className="flex items-center">
           <ul className="flex md:gap-1 items-center">
-            <li className="hidden md:block">
-              <ProfileModal />
-            </li>
-            <li className="md:hidden">
-              <ProfileDrawer />
-            </li>
-            <li className="hidden md:block">
-              <SettingModal />
-            </li>
-            <li className="md:hidden">
-              <SettingDrawer />
-            </li>
+            <NavbarClientActions />
             <li>
               <Link href={"https://github.com/rch-goldsnaker/weather-station"} target="_blank">
                 <Button variant={"ghost"} className="gap-1">
