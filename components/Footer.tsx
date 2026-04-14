@@ -30,19 +30,29 @@ export function Footer() {
   const [windAvg, setWindAvg] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
+    let webSocket: WebSocket | null = null;
+
     const fetchLoginData = async () => {
       try {
         const login = await loginTb();
         const setting = await readSetting();
+        // console.log(setting)
 
         if (setting.success && setting.data && setting.data.setting && setting.data.setting.entityType && setting.data.setting.entityId) {
-          const token = login.token;
+          if (!login.success) {
+            console.error(login.error);
+            return;
+          }
+          const token = login.data.token;
           const { entityType, entityId } = setting.data.setting;
-          const webSocket = new WebSocket(
-            process.env.NEXT_PUBLIC_TB_WS_URL || ""
-          );
+          if (cancelled) return;
 
-          webSocket.onopen = () => {
+          const ws = new WebSocket(process.env.NEXT_PUBLIC_TB_WS_URL || "");
+          webSocket = ws;
+
+          ws.onopen = () => {
+            if (cancelled) return;
             const object = {
               authCmd: {
                 cmdId: 0,
@@ -59,10 +69,11 @@ export function Footer() {
               ],
             };
             const data = JSON.stringify(object);
-            webSocket.send(data);
+            ws.send(data);
           };
 
-          webSocket.onmessage = (event) => {
+          ws.onmessage = (event) => {
+            if (cancelled) return;
             const receivedData = JSON.parse(event.data);
             const { subscriptionId, data } = receivedData;
             const {
@@ -87,12 +98,8 @@ export function Footer() {
             setWindAvg(windAvg[0][1]);
           };
 
-          webSocket.onclose = () => {
+          ws.onclose = () => {
             console.log("Connection closed!");
-          };
-
-          return () => {
-            webSocket.close();
           };
         } else {
           console.error("Setting data is null or empty");
@@ -102,6 +109,11 @@ export function Footer() {
       }
     };
     fetchLoginData();
+
+    return () => {
+      cancelled = true;
+      webSocket?.close();
+    };
   }, []);
   return (
     <div className="flex flex-col">

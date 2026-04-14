@@ -1,26 +1,29 @@
 'use client'
 import { useEffect, useState } from 'react';
+import type { Session } from "@supabase/supabase-js";
 import { createSupabaseClientClient } from "@/lib/supabase/client";
-import { unstable_noStore as noStore } from "next/cache";
 
 export async function readUserSession() {
-  noStore();
-  const supabase = await createSupabaseClientClient();
+  const supabase = createSupabaseClientClient();
   return supabase.auth.getSession();
 }
 
 export function useGetUserSB() {
-  const [userInfo, setUserInfo] = useState<any>(null);
-  const [error, setError] = useState(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const { error, data } = await readUserSession();
-        setUserInfo(data);
+        if (error) {
+          setError(error.message);
+          return;
+        }
+        setSession(data.session);
       } catch (err) { 
-        setError(error);
-        console.log('error', err);
+        const message = err instanceof Error ? err.message : "Failed to read session.";
+        setError(message);
       }
     };
 
@@ -28,5 +31,5 @@ export function useGetUserSB() {
 
   }, []);
 
-  return { userInfo, error };
+  return { session, error };
 }

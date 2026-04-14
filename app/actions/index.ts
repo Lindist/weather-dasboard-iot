@@ -3,7 +3,7 @@
 import type { Session, User } from "@supabase/supabase-js";
 import { z } from "zod";
 import axios from "@/config/axiosTb";
-import { AxiosResponse } from "axios";
+import { AxiosResponse, isAxiosError } from "axios";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { SettingRow } from "@/types/settings";
@@ -24,9 +24,14 @@ const formatZodError = (error: z.ZodError): string =>
   error.issues.map((issue) => issue.message).join(", ");
 
 type LoginResult = {
-  token?: string;
-  refreshToken?: string;
-  error?: Error;
+  success: true;
+  data: {
+    token: string;
+    refreshToken: string;
+  };
+} | {
+  success: false;
+  error: string;
 };
 
 type ResponseData = {
@@ -56,9 +61,26 @@ export async function loginTb(): Promise<LoginResult> {
     );
 
     const { token, refreshToken } = responseLogin.data;
-    return { token, refreshToken };
-  } catch (error) {
-    return { error: error as Error };
+    return { success: true, data: { token, refreshToken } };
+  } catch (err) {
+    if (isAxiosError(err)) {
+      const status = err.response?.status;
+      if (status === 401) {
+        return {
+          success: false,
+          error:
+            "ThingsBoard login failed (401 Unauthorized). Check TB_USERNAME/TB_PASSWORD and TB_API_URL in .env.local.",
+        };
+      }
+      return {
+        success: false,
+        error: `ThingsBoard login failed${status ? ` (${status})` : ""}.`,
+      };
+    }
+
+    const message = err instanceof Error ? err.message : "ThingsBoard login failed.";
+    // Important: Server Actions can only return plain serializable data to Client Components.
+    return { success: false, error: message };
   }
 }
 
