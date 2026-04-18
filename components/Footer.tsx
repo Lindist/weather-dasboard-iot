@@ -226,7 +226,7 @@ export function Footer() {
                 <Icons.temperature className="h-5 w-5" />
               </div>
               <div className="mt-1 h-[140px] w-full">
-                {renderGauge({ value: tempIn, min: 0, max: 120, unit: "°F" })}
+                {renderGauge({ value: tempIn, min: -40, max: 80, unit: "°C" })}
               </div>
             </div>
           </SwiperSlide>
@@ -270,7 +270,7 @@ export function Footer() {
                 <Icons.temperature className="h-5 w-5" />
               </div>
               <div className="mt-1 h-[140px] w-full">
-                {renderGauge({ value: tempOut, min: 0, max: 120, unit: "°F" })}
+                {renderGauge({ value: tempOut, min: -40, max: 80, unit: "°C" })}
               </div>
             </div>
           </SwiperSlide>

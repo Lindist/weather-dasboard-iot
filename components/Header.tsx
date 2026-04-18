@@ -11,7 +11,7 @@ export function Header() {
           <Icons.currentLocation className="w-6 h-6 md:block"/>
 
           <p className="text-sm md:text-xl text-shadow shadow-slate-800 ">
-            California,Buena Park, CA 90621
+            Bangkok,Phrae Province, SubDistrict Long 54150
           </p>
         </div>
       </div>
