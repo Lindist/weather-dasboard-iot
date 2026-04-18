@@ -75,28 +75,66 @@ export function Footer() {
 
           ws.onmessage = (event) => {
             if (cancelled) return;
-            const receivedData = JSON.parse(event.data);
-            const { data } = receivedData;
-            const {
-              tempIn,
-              tempOut,
-              humIn,
-              humOut,
-              pressure,
-              rainfall,
-              windDirection,
-              windSpeed,
-              windAvg,
-            } = data;
-            setTempIn(Number(tempIn?.[0]?.[1]));
-            setTempOut(Number(tempOut?.[0]?.[1]));
-            setHumIn(Number(humIn?.[0]?.[1]));
-            setHumOut(Number(humOut?.[0]?.[1]));
-            setPressure(Number(pressure?.[0]?.[1]));
-            setRainfall(Number(rainfall?.[0]?.[1]));
-            setWindDirection(windDirection[0][1]);
-            setWindSpeed(Number(windSpeed?.[0]?.[1]));
-            setWindAvg(Number(windAvg?.[0]?.[1]));
+            let receivedData: any;
+            try {
+              receivedData = JSON.parse(event.data);
+            } catch {
+              return;
+            }
+
+            const data: Record<string, any> | undefined = receivedData?.data;
+            if (!data) return;
+
+            const has = (key: string) => Object.prototype.hasOwnProperty.call(data, key);
+            const latestNumber = (key: string): number | null => {
+              const v = data?.[key]?.[0]?.[1];
+              if (v === undefined || v === null || v === "") return null;
+              const n = Number(v);
+              return Number.isFinite(n) ? n : null;
+            };
+            const latestString = (key: string): string | null => {
+              const v = data?.[key]?.[0]?.[1];
+              if (v === undefined || v === null) return null;
+              const s = String(v).trim();
+              return s.length ? s : null;
+            };
+
+            if (has("tempIn")) {
+              const v = latestNumber("tempIn");
+              if (v !== null) setTempIn(v);
+            }
+            if (has("tempOut")) {
+              const v = latestNumber("tempOut");
+              if (v !== null) setTempOut(v);
+            }
+            if (has("humIn")) {
+              const v = latestNumber("humIn");
+              if (v !== null) setHumIn(v);
+            }
+            if (has("humOut")) {
+              const v = latestNumber("humOut");
+              if (v !== null) setHumOut(v);
+            }
+            if (has("pressure")) {
+              const v = latestNumber("pressure");
+              if (v !== null) setPressure(v);
+            }
+            if (has("rainfall")) {
+              const v = latestNumber("rainfall");
+              if (v !== null) setRainfall(v);
+            }
+            if (has("windSpeed")) {
+              const v = latestNumber("windSpeed");
+              if (v !== null) setWindSpeed(v);
+            }
+            if (has("windAvg")) {
+              const v = latestNumber("windAvg");
+              if (v !== null) setWindAvg(v);
+            }
+            if (has("windDirection")) {
+              const v = latestString("windDirection");
+              if (v !== null) setWindDirection(v);
+            }
           };
 
           ws.onclose = () => {
